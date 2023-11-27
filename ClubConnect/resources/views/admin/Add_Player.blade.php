@@ -201,6 +201,16 @@
     </div>
 
     <div class="form-group">
+    <label for="club">Player's Club</label>
+    <select class="form-control" name="club" id="club" required>
+        <option value="">Select a club</option>
+        @foreach ($clubs as $club)
+            <option value="{{ $club->club_name }}">{{ $club->club_name }}</option>
+        @endforeach
+    </select>
+</div>
+
+    <div class="form-group">
       <label for="pimage">Image</label>
       <input type="file" name="pimage" id="pimage" required>
     </div>

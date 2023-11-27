@@ -3,9 +3,6 @@
         <a class="navbar-brand" href="index.html">
             Club Connect
         </a>
-
-        <a href="ticket.html" class="btn custom-btn d-lg-none ms-auto me-4">Buy Ticket</a>
-
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -30,7 +27,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link click-scroll" href="#section_5">Search</a>
+                    <a class="nav-link click-scroll" href="#section_5">Comments</a>
                 </li>
 
                 @if (Route::has('login'))
@@ -57,6 +54,18 @@
                     </li>
                     @endauth
                 @endif
+
+                <li class="nav-item" style="padding-left: 10px;">
+    <form style="display: flex;" action="{{url('search')}}" method="get" class="d-flex">
+        @csrf
+        <div class="input-group">
+            <input type="text" name="search" placeholder="Search For Players" class="form-control rounded-pill" style="border: none;">
+            <button type="submit" class="btn custom-btn rounded-pill" style="background-color: #ee5007; ">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+    </form>
+</li>
             </ul>
         </div>
     </div>

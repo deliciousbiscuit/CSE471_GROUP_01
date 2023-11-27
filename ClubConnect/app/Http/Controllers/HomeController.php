@@ -8,13 +8,23 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\User;
 
+use App\Models\Player;
+
+use App\Models\Club;
+
+
+
+
+
 class HomeController extends Controller
 {
 
     public function index()
-	{
-        return view('home.fanpage');
-    }
+{
+            $clubs = Club::all();
+            $players = Player::orderBy('rank', 'asc')->get();
+            return view('home.homepage',compact('clubs','players'));
+}
 
     public function redirect()
     {
@@ -24,9 +34,10 @@ class HomeController extends Controller
     	{
     		return view('admin.home');
     	}
-        else 
-        {
-            return view('home.fanpage');
-        }
+        elseif ($usertype=='2')
+    	{
+    		return view('club.home');
+    	}
     }
+
 }
