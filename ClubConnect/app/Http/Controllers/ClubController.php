@@ -10,6 +10,8 @@ use App\Models\ClubBid;
 
 use App\Models\ClubPlayer;
 
+use App\Models\MatchRequest;
+
 use PDF;
 
 use Illuminate\Http\Request;
@@ -154,7 +156,6 @@ public function submitBid(Request $request, $playerId)
 
     ClubBid::create([
         'club_id' => $clubId,
-       
         'player_id' => $playerId,
         'bid_number' => $bidNumber,
     ]);
@@ -167,12 +168,34 @@ public function bidStatus()
     {
     $user = Auth::user();
     $club = Club::where('user_id', $user->id)->first();
-  
+    $bids = ClubBid::where('club_id', $club->user_id )->get();
 
-
-    //$bids = ClubBid::where('club_id', $club->user_id )->get();
-    $bids = ClubBid::with('player')->where('club_id', $club->user_id)->get();
     return view('club.bid_status', compact('bids'));
+    }
+
+public function request_match_page()
+    {
+        $clubs = Club::all();
+        return view('club.request_match_page', compact('clubs'));
+    }
+
+public function send_match_request(Request $request)
+    {
+        $request->validate([
+            'team2' => 'required|different:team1|exists:clubs,user_id',
+            'match_datetime' => 'required|date',
+            'stadium' => 'required|string',
+        ]);
+    
+        $matchRequest = new MatchRequest;
+        $matchRequest->club_id = auth()->user()->id; 
+        $matchRequest->team2_id = $request->team2;
+        $matchRequest->match_datetime = $request->match_datetime;
+        $matchRequest->stadium = $request->stadium;
+        $matchRequest->status = 'pending'; 
+        $matchRequest->save();
+    
+        return redirect()->back()->with('message', 'Match request sent successfully');
     }
 
 

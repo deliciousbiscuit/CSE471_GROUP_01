@@ -54,15 +54,6 @@
                     </li>
                     @endauth
                 @endif
-
-                <li class="nav-item" style="padding-left: 10px;">
-    <form style="display: flex;" action="{{url('search')}}" method="get" class="d-flex">
-        @csrf
-        <div class="input-group">
-            <input type="text" name="search" placeholder="Search For Players" class="form-control rounded-pill" style="border: none;">
-            <button type="submit" class="btn custom-btn rounded-pill" style="background-color: #ee5007; ">
-                <i class="bi bi-search"></i>
-            </button>
         </div>
     </form>
 </li>
