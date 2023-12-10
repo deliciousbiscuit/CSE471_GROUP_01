@@ -135,6 +135,7 @@
         <!-- Event -->
 
         <!-- Event -->
+        @include('home.comments')
         <!-- Event -->
        
     </main>

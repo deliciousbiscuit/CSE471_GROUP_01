@@ -52,7 +52,7 @@
                       <td>{{ $user->address }}</td>
 
                       <td><a href="{{url('send_email', $user->id)}}" class='btn btn-info'>Email</a></td>
-                    </tr> 
+                    </tr>
       
                     @endforeach
                   </tbody>

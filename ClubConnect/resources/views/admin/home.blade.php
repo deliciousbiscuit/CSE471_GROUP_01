@@ -27,8 +27,29 @@
 
 
         <!--  START  -->
+        <h1>Two Factor Authentication</h1>
+        <br>
+        <br>
 
-        
+        <form method = "POST" action="/user/two-factor-authentication">
+          @csrf
+
+          @if (auth()->user()->two_factor_secret)
+            @method('DELETE')
+
+            <div>
+              {!!auth()->user()->twoFactorQrCodeSvg()!!}
+            </div>
+            <br>
+            <br>
+
+            <button class="btn btn-danger">Disable</button>
+          @else
+            <button class="btn btn-primary">Enable</button>
+          @endif
+
+        </form>
+
         
         <!--  END  -->
         

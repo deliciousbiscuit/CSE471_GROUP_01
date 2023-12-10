@@ -127,23 +127,35 @@
         <!--  START  -->
 
         
+        <table class="table table-bordered table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">Bid From</th>
+            <th scope="col">Player Name</th>
+            <th scope="col">Existing Club</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach ($bids as $bid)
+    <tr>
+        <td>{{ $bid->club->club_name }}</td>
+        <td>{{ $bid->player->name }}</td>
+        <td>{{ $bid->player->club}}</td> <!-- Display the player's existing club -->
+        <td>
+            <form action="{{ route('acceptBid', $bid->id) }}" method="POST" style="display: inline;">
+                @csrf
+                <button type="submit" class="btn btn-success">Accept</button>
+            </form>
+            <form action="{{ route('declineBid', $bid->id) }}" method="POST" style="display: inline;">
+                @csrf
+                <button type="submit" class="btn btn-danger">Decline</button>
+            </form>
+        </td>
+    </tr>
+@endforeach
 
-        @foreach ($bids as $bid)
-        <div>
-            <p>Bid from Club ID: {{ $bid->club_id }} for Player ID: {{ $bid->player_id }}</p>
-            <form action="{{ route('acceptBid', $bid->id) }}" method="POST">
-                @csrf
-                <button type="submit">Accept</button>
-            </form>
-            <form action="{{ route('declineBid', $bid->id) }}" method="POST">
-                @csrf
-                <button type="submit">Decline</button>
-            </form>
-        </div>
-        @endforeach
-    
-  
-        
+
         <!--  END  -->
         
 

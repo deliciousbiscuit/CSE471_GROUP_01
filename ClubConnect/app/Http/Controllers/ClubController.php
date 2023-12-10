@@ -74,29 +74,30 @@ class ClubController extends Controller
         return view('club.edit_club_page', compact('club'));
     }
 
-    public function update_club(Request $request, Club $club)
-{
-    $validatedData = $request->validate([
-        'club_name' => 'required|string',
-        'club_location' => 'required|string',
-        'club_logo' => 'nullable|image|max:2048',
-    ]);
-
-    $club->club_name = $request->club_name;
-    $club->club_location = $request->club_location;
-
-    if ($request->hasFile('club_logo')) {
-        $image = $request->file('club_logo');
-        $imageName = time().'.'.$image->getClientOriginalExtension();
-        $image->move(public_path('club_images'), $imageName);
-        $club->club_logo = $imageName;
+    public function update_club(Request $request, $clubId)
+    {
+        $validatedData = $request->validate([
+            'club_name' => 'required|string',
+            'club_location' => 'required|string',
+            'club_logo' => 'nullable|image|max:2048',
+        ]);
+    
+        $club = Club::findOrFail($clubId);
+    
+        $club->club_name = $request->club_name;
+        $club->club_location = $request->club_location;
+    
+        if ($request->hasFile('club_logo')) {
+            $image = $request->file('club_logo');
+            $imageName = time().'.'.$image->getClientOriginalExtension();
+            $image->move(public_path('club_images'), $imageName);
+            $club->club_logo = $imageName;
+        }
+    
+        $club->save();
+    
+        return redirect()->back()->with('message', 'Club Updated Successfully');
     }
-
-    $club->save();
-
-    return redirect()->back()->with('message', 'Club Updated Successfully');
-}
-
     
     public function show_player_page()
 {
@@ -156,6 +157,7 @@ public function submitBid(Request $request, $playerId)
 
     ClubBid::create([
         'club_id' => $clubId,
+       
         'player_id' => $playerId,
         'bid_number' => $bidNumber,
     ]);
@@ -168,8 +170,11 @@ public function bidStatus()
     {
     $user = Auth::user();
     $club = Club::where('user_id', $user->id)->first();
-    $bids = ClubBid::where('club_id', $club->user_id )->get();
+  
 
+
+    //$bids = ClubBid::where('club_id', $club->user_id )->get();
+    $bids = ClubBid::with('player')->where('club_id', $club->user_id)->get();
     return view('club.bid_status', compact('bids'));
     }
 
@@ -182,7 +187,7 @@ public function request_match_page()
 public function send_match_request(Request $request)
     {
         $request->validate([
-            'team2' => 'required|different:team1|exists:clubs,user_id',
+            'team2' => 'required|different:team1|exists:clubs,id',
             'match_datetime' => 'required|date',
             'stadium' => 'required|string',
         ]);

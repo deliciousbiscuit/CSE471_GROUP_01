@@ -58,7 +58,10 @@ class AdminController extends Controller
     $player->weight = $request->weight;
     $player->contact = $request->contact;
     $player->address = $request->address;
+    $player->club_id = Club::where('club_name', $request->club)->value('user_id'); // Assign club_id based on club_name
+    //$player->club = $request->club; // Assign club based on club_name
     $player->club = $request->club;
+   // $player->club_id = $request->club;
     $player->position = $request->position;
     $player->expeirence = $request->experience;
     $player->goals = $request->goals ?: 0;
@@ -66,7 +69,8 @@ class AdminController extends Controller
     $player->minsplayed = $request->minutes_played ?: 0;
     $player->ranking_value = $newRankingValue;
     $player->rank = 0;
-
+   
+ 
     // Handle image upload
     if ($request->hasFile('pimage')) {
         $image = $request->file('pimage');
@@ -74,7 +78,8 @@ class AdminController extends Controller
         $image->move('player_images', $imageName);
         $player->pimage = $imageName;
     }
-    
+    //$player->club_id = Club::where('club_name', $request->club)->value('user_id'); // Assign club_id based on club_name
+   // $player->club = $request->club; 
     $player->save();
 
 
@@ -208,17 +213,16 @@ class AdminController extends Controller
         }
     }
     
-    public function sponsor_page()
-    {
-    	return view('admin.sponsor_page');
-    }
 
 
     public function showPendingBids()
     {
-        $pendingBids = ClubBid::where('is_accepted', false)->get();
+        $pendingBids = ClubBid::with(['club.clubBids', 'player.clubBids'])
+        ->where('is_accepted', false)
+        ->where('is_declined', false)
+        ->get();
 
-        return view('admin.pending_bids', ['bids' => $pendingBids]);
+    return view('admin.pending_bids', ['bids' => $pendingBids]);
     }
 
 
@@ -227,20 +231,37 @@ class AdminController extends Controller
         $bid = ClubBid::findOrFail($bidId);
         $bid->is_accepted = true;
         $bid->save();
+        $player = $bid->player->load('club');
+      //  dd($player->toArray());
+        $newClub = $bid->club;
 
+        // Retrieve the club based on the club name in the player table
+       // $club = Club::where('club_name', $player->club)->first();
+       // dd($newClub->toArray());
+        // Update player's club information
+        if ($newClub) {
+            $player->update([
+                'club_id' => $newClub->user_id,
+                'club' => $newClub->club_name,
+            ]);
+        }
+        //dd($player->toArray());
         Session::flash('message', 'Bid accepted');
         return redirect()->back();
+
+        //Session::flash('message', 'Bid accepted');
+        //return redirect()->back();
     }
 
     public function declineBid($bidId)
-    {
-        $bid = ClubBid::findOrFail($bidId);
-        $bid->delete();
+{
+    $bid = ClubBid::findOrFail($bidId);
+    $bid->is_declined = true;
+    $bid->save();
 
-
-        Session::flash('message', 'Bid declined');
-        return redirect()->back();
-    }
+    Session::flash('message', 'Bid declined');
+    return redirect()->back();
+}
 
     public function create_match_page()
     {
@@ -329,7 +350,7 @@ class AdminController extends Controller
             'greeting' => $request->greeting,
             'body' => $request->body,
             'button' => $request->button,
-            //'url' => $request->url,
+            'url' => $request->url,
         ];
 
         Notification::send($fans, new SendEmailNotification($details));

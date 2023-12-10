@@ -24,7 +24,7 @@
     <link href="home/css/templatemo-festava-live.css" rel="stylesheet">
 
     <!-- Header -->
-<style>
+    <style>
 
 .Ticket-Text{
     align-items: center;
